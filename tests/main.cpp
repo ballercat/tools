@@ -1,6 +1,13 @@
 #include <iostream>
+#include "../toolkit.h"
 
 using namespace std;
+
+bool tuple_tests()
+{
+
+    return true;
+}
 
 int main()
 {
