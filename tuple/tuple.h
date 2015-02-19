@@ -24,6 +24,73 @@
 
 #ifndef TUPLE
 #define TUPLE
+#include<cstdlib>
+#include<type_traits>
+
+namespace types {
+
+//Tuple class
+template <class... Ts> struct tuple {};
+
+template <class T, class... Ts>
+struct tuple<T, Ts...> : tuple<Ts...>
+{
+    //ctor
+    tuple(T t, Ts... ts) :
+        tuple<Ts...>(ts...),
+        tail(t)
+    {}
+
+    T tail;
+};
+
+//Element holder
+template<size_t k, typename T> struct element_holder {};
+
+template <class T, class... Ts>
+struct element_holder<0, tuple<T, Ts...>>
+{
+    using type = T;
+};
+
+template <size_t k, class T,  class... Ts>
+struct element_holder<k, tuple<T, Ts...>>
+{
+    using type = typename element_holder<k - 1, tuple<Ts...>>::type;
+};
+
+//Tuple size
+template <class T> struct tuple_sizer;
+
+//Copied from standard basically
+template <class... Ts>
+struct tuple_sizer<tuple<Ts...>> :
+    public std::integral_constant<size_t, sizeof...(Ts)>
+{
+};
+
+template <class T>
+constexpr size_t tuple_size(T t) { return tuple_sizer<T>::value; }
+
+//Get function
+template <size_t k, class... Ts>
+typename
+std::enable_if<k == 0, typename element_holder<0, tuple<Ts...>>::type&>::type
+get_from( tuple<Ts...>& t )
+{
+    return t.tail;
+}
+
+template <size_t k, class T, class... Ts>
+typename
+std::enable_if<k != 0, typename element_holder<k, tuple<T, Ts...>>::type&>::type
+get_from( tuple<T, Ts...>& t )
+{
+    tuple<Ts...>& base = t;
+    return get_from<k - 1>(base);
+};
+
+} //namespace types
 
 #endif // TUPLE
 

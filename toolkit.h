@@ -25,5 +25,6 @@
 #define TOOLKIT_H
 
 #include "tuple/tuple.h"
+#include "item/item.h"
 
 #endif //TOOLKIT_H
